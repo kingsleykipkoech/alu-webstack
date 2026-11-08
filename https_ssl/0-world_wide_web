@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+# Displays information about subdomains for a domain using dig and awk
+# shellcheck disable=SC2086
+
+check_subdomain() {
+    local domain="$1"
+    local sub="$2"
+    dig "${sub}.${domain}" | awk -v s="$sub" '/ANSWER SECTION/ { getline; print "The subdomain " s " is a " $4 " record and points to " $5 }'
+}
+
+if [ -n "$2" ]; then
+    check_subdomain "$1" "$2"
+else
+    for sub in www lb-01 web-01 web-02; do
+        check_subdomain "$1" "$sub"
+    done
+fi
